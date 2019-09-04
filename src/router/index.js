@@ -57,6 +57,8 @@ const Register = () => import('@/views/pages/Register')
 // Users
 const Users = () => import('@/views/users/Users')
 const User = () => import('@/views/users/User')
+const FormUserUpd = () => import('@/views/users/FormUserUpd')
+const FormUserAdd = () => import('@/views/users/FormUserAdd')
 // const ListUsers = () => import('@/views/users/ListUsers')
 
 Vue.use(Router)
@@ -143,12 +145,24 @@ export default new Router({
               path: '',
               component: Users,
             },
+            // {
+            //   path: ':id',
+            //   meta: { label: 'User Details'},
+            //   name: 'User',
+            //   component: User,
+            // },
             {
-              path: ':id',
-              meta: { label: 'User Details'},
+              path: 'edit/:id',
+              meta: { label: 'User Edit'},
               name: 'User',
-              component: User,
+              component: FormUserUpd,
             },
+            {
+              path: 'add',
+              meta: { label: 'User Add'},
+              name: 'UserAdd',
+              component: FormUserAdd,
+            }
           ]
         },
         {

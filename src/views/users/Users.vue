@@ -3,7 +3,10 @@
     <b-col cols="12" xl="12">
       <transition name="slide">
       <b-card>
-        <div slot="header" v-html="caption"></div>
+        <!-- <div slot="header" v-html="caption"> -->
+        <div slot="header">
+          <div class="d-flex"><div>Usuários</div><div class="ml-auto"><button type="button" class="btn btn-success btn-sm" @click="addUser()"><i class="fa fa-plus-square" aria-hidden="true"></i> Adicionar</button></div></div>
+        </div>
         <b-table :hover="hover" :striped="striped" :bordered="bordered" :small="small" :fixed="fixed" responsive="sm" :items="items" :fields="fields" :current-page="currentPage" :per-page="perPage" @row-clicked="rowClicked">
           <template slot="#" slot-scope="data">
             <!-- <strong>{{data.item.id}}</strong> -->
@@ -17,6 +20,9 @@
           </template>
           <template slot="status" slot-scope="data">
             <b-badge :variant="getBadge(data.item.bloqueado)">{{data.item.bloqueado ? 'Bloqueado' : 'Ativo'}}</b-badge>
+          </template>
+          <template slot="ações" slot-scope="data">
+            <button type="button" class="btn btn-primary btn-sm" @click="editUser(data.item._id)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
           </template>
         </b-table>
         <nav>
@@ -32,13 +38,14 @@
 // import usersData from './UsersData'
 import axios from './../../configs/axios'
 import moment from 'moment'
+
 export default {
   name: 'Users',
   props: {
-    caption: {
-      type: String,
-      default: 'Users'
-    },
+    // caption: {
+    //   type: String,
+    //   default: `${btnAdd}`
+    // },
     hover: {
       type: Boolean,
       default: true
@@ -76,7 +83,8 @@ export default {
         {key: 'name'},
         {key: 'email'},
         {key: 'Última atualização'},
-        {key: 'status'}
+        {key: 'status'},
+        {key: 'ações'}
       ],
       currentPage: 1,
       perPage: 5,
@@ -127,12 +135,19 @@ export default {
       return `users/${id.toString()}`
     },
     rowClicked (item) {
-      console.log(item)
       const userLink = this.userLink(item._id)
       this.$router.push({path: userLink})
     },
     formatarData (data) {
      return moment(data).format('DD/MM/YYYY HH:mm:ss')
+    },
+    editUser(id){
+      const formUserLink = `users/edit/${id.toString()}`
+      this.$router.push({path: formUserLink})
+    },
+    addUser(){
+      console.log("Adicionar")
+      this.$router.push({path: `users/add`})
     }
 
   }
