@@ -1,0 +1,146 @@
+<template>
+  <b-row>
+    <b-col cols="12" xl="12">
+      <transition name="slide">
+      <b-card>
+        <div slot="header" v-html="caption"></div>
+        <b-table :hover="hover" :striped="striped" :bordered="bordered" :small="small" :fixed="fixed" responsive="sm" :items="items" :fields="fields" :current-page="currentPage" :per-page="perPage" @row-clicked="rowClicked">
+          <template slot="#" slot-scope="data">
+            <!-- <strong>{{data.item.id}}</strong> -->
+            <strong>{{data.item.id}}</strong>
+          </template>
+          <template slot="name" slot-scope="data">
+            <strong>{{data.item.name}}</strong>
+          </template>
+           <template slot="Última atualização" slot-scope="data">
+           {{formatarData(data.item.createdAt)}}
+          </template>
+          <template slot="status" slot-scope="data">
+            <b-badge :variant="getBadge(data.item.bloqueado)">{{data.item.bloqueado ? 'Bloqueado' : 'Ativo'}}</b-badge>
+          </template>
+        </b-table>
+        <nav>
+          <b-pagination size="sm" :total-rows="getRowCount(items)" :per-page="perPage" v-model="currentPage" prev-text="Prev" next-text="Next" hide-goto-end-buttons/>
+        </nav>
+      </b-card>
+      </transition>
+    </b-col>
+  </b-row>
+</template>
+
+<script>
+// import usersData from './UsersData'
+import axios from './../../configs/axios'
+import moment from 'moment'
+export default {
+  name: 'Users',
+  props: {
+    caption: {
+      type: String,
+      default: 'Users'
+    },
+    hover: {
+      type: Boolean,
+      default: true
+    },
+    striped: {
+      type: Boolean,
+      default: true
+    },
+    bordered: {
+      type: Boolean,
+      default: false
+    },
+    small: {
+      type: Boolean,
+      default: false
+    },
+    fixed: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data: () => {
+    return {
+      // items: usersData.filter((user) => user.id < 42),
+      // fields: [
+      //   {key: 'id'},
+      //   {key: 'name'},
+      //   {key: 'registered'},
+      //   {key: 'role'},
+      //   {key: 'status'}
+      // ],
+      items: [],
+      fields: [
+        {key: '#'},
+        {key: 'name'},
+        {key: 'email'},
+        {key: 'Última atualização'},
+        {key: 'status'}
+      ],
+      currentPage: 1,
+      perPage: 5,
+      totalRows: 0,
+      count: 0
+    }
+  },
+  computed: {
+  },
+  created() {
+    axios.get(`/admin/listusers`)
+    .then((response) =>{
+      // console.log(`GET Usuários ${response}`)
+      // this.usuarios = response.data
+      //  this.items = response.data.filter((user) => user._id < 42)
+      this.items = response.data
+    })
+    .catch(error => {
+        // console.log("Erro capturado no catch: ", error)
+
+        if (error.response.status == 401) {
+          localStorage.removeItem('access_token');
+          this.$router.push('/pages/login');
+        }
+
+        if(error.response) {
+            console.log('Erro [resposta]: ', error.response)
+        } else if (error.request) {
+            console.log('Erro [requisição]: ', error.request)
+        } else {
+            console.log('Erro [Outro]: ', error.message)
+        }
+    })
+  },
+  methods: {
+    getBadge (status) {
+      return status ? 'danger'
+        : 'success'
+      // return status === 'Active' ? 'success'
+      //   : status === 'Inactive' ? 'secondary'
+      //     : status === 'Pending' ? 'warning'
+      //       : status === 'Banned' ? 'danger' : 'primary'
+    },
+    getRowCount (items) {
+      return items.length
+    },
+    userLink (id) {
+      return `users/${id.toString()}`
+    },
+    rowClicked (item) {
+      console.log(item)
+      const userLink = this.userLink(item._id)
+      this.$router.push({path: userLink})
+    },
+    formatarData (data) {
+     return moment(data).format('DD/MM/YYYY HH:mm:ss')
+    }
+
+  }
+}
+</script>
+
+<style scoped>
+.card-body >>> table > tbody > tr > td {
+  cursor: pointer;
+}
+</style>
