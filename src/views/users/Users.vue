@@ -23,6 +23,7 @@
           </template>
           <template slot="ações" slot-scope="data">
             <button type="button" class="btn btn-primary btn-sm" @click="editUser(data.item._id)"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-danger btn-sm" @click="removeUser(data.item._id)"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
           </template>
         </b-table>
         <nav>
@@ -95,7 +96,7 @@ export default {
   computed: {
   },
   created() {
-    axios.get(`/admin/listusers`)
+    axios.get(`/admin/users`)
     .then((response) =>{
       // console.log(`GET Usuários ${response}`)
       // this.usuarios = response.data
@@ -146,8 +147,36 @@ export default {
       this.$router.push({path: formUserLink})
     },
     addUser(){
-      console.log("Adicionar")
       this.$router.push({path: `users/add`})
+    },
+    removeUser(id) {
+
+      if (confirm("Tem certeza que deseja excluir esse usuário?")) {
+
+        axios.delete(`/admin/user/${id}`)
+        .then((response) => {
+          this.items = this.items.filter(it => it._id !== id);
+
+        })
+        .catch(error => {
+            // console.log("Erro capturado no catch: ", error)
+
+            if (error.response.status == 401) {
+              localStorage.removeItem('access_token');
+              this.$router.push('/pages/login');
+            }
+
+            if(error.response) {
+                console.log('Erro [resposta]: ', error.response)
+            } else if (error.request) {
+                console.log('Erro [requisição]: ', error.request)
+            } else {
+                console.log('Erro [Outro]: ', error.message)
+            }
+        })
+
+      }
+
     }
 
   }

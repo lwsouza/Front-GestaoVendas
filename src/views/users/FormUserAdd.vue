@@ -7,6 +7,7 @@
             <strong>Adicionar</strong> usuário
           </div>
           <b-form @submit.prevent="onSubmit()">
+            <p class="alert alert-danger" v-if="msgRetorno !== undefined">{{ msgRetorno }}</p>
           <b-form-group
             description="Me diga seu nome completo"
             label="Nome completo"
@@ -21,7 +22,7 @@
             label-for="userName"
             :label-cols="3"
             >
-            <b-form-input v-model="item.usuario" id="userName" type="text"></b-form-input>
+            <b-form-input v-model="item.usuario" id="userName" type="text" required></b-form-input>
           </b-form-group>
           <b-form-group
             description="Por favor digite seu e-mail"
@@ -29,7 +30,7 @@
             label-for="email"
             :label-cols="3"
             >
-            <b-form-input v-model="item.email" id="email" type="email" placeholder="Enter your email" autocomplete="email"></b-form-input>
+            <b-form-input v-model="item.email" id="email" type="email" placeholder="Enter your email" autocomplete="email" required></b-form-input>
           </b-form-group>
           <b-form-group
             description="Pavor digite sua senha"
@@ -37,7 +38,7 @@
             label-for="password"
             :label-cols="3"
             >
-            <b-form-input v-model="item.password" id="password" type="password" placeholder="Enter your password" autocomplete="current-password"></b-form-input>
+            <b-form-input v-model="item.password" id="password" type="password" placeholder="Enter your password" autocomplete="current-password" required></b-form-input>
           </b-form-group>
           <b-form-group
             label="Bloqueado"
@@ -52,7 +53,7 @@
                 <label class="custom-control-label" for="customRadioInline1">Sim</label>
               </div>
               <div class="custom-control custom-radio custom-control-inline">
-                <input type="radio" id="customRadioInline2" name="radioBlocked" class="custom-control-input" v-model="item.bloqueado" value="false" checked>
+                <input type="radio" id="customRadioInline2" name="radioBlocked" class="custom-control-input" v-model="item.bloqueado" value="false">
                 <label class="custom-control-label" for="customRadioInline2">Não</label>
               </div>
             </b-form-radio-group>
@@ -76,7 +77,10 @@ export default {
   name: 'form-user-add',
   data (id) {
     return {
-      item: []
+      item: {
+         bloqueado: false
+      },
+      msgRetorno: undefined
     }
   },
   methods: {
@@ -88,33 +92,35 @@ export default {
       // this.$router.replace({path: '/users'})
     },
     onSubmit() {
-      console.log("AQUI");
-      // console.log(this.item);
+      
+      this.item.bloqueado = this.item.bloqueado == 'true';
 
-      // this.item.bloqueado = this.item.bloqueado.toLowerCase() == 'true';
+      axios.post(`/admin/user`, this.item)
+      .then((response) =>{
+        console.log(response);
+        this.item = response.data
+        this.$router.push('/users');
+      })
+      .catch(error => {
+          // console.log("Erro capturado no catch: ", error)
 
-      // axios.put(`/admin/updateuser`, this.item)
-      // .then((response) =>{
-      //   console.log(response);
-      //   this.item = response.data
-      //   this.$router.push('/users');
-      // })
-      // .catch(error => {
-      //     // console.log("Erro capturado no catch: ", error)
+          if (error.response.status == 401) {
+            localStorage.removeItem('access_token');
+            this.$router.push('/pages/login');
+          }
 
-      //     if (error.response.status == 401) {
-      //       localStorage.removeItem('access_token');
-      //       this.$router.push('/pages/login');
-      //     }
+          if (error.response.status == 400) {
+            this.msgRetorno = "Usuário ou email já cadastrado!";
+          }
 
-      //     if(error.response) {
-      //         console.log('Erro [resposta]: ', error.response)
-      //     } else if (error.request) {
-      //         console.log('Erro [requisição]: ', error.request)
-      //     } else {
-      //         console.log('Erro [Outro]: ', error.message)
-      //     }
-      // })
+          if(error.response) {
+              console.log('Erro [resposta]: ', error.response)
+          } else if (error.request) {
+              console.log('Erro [requisição]: ', error.request)
+          } else {
+              console.log('Erro [Outro]: ', error.message)
+          }
+      })
     }
   }
 }

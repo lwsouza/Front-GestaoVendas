@@ -82,7 +82,7 @@ export default {
   created() {
     let id = this.$route.params.id;
 
-    axios.get(`/admin/listuser/${id}`)
+    axios.get(`/admin/user/${id}`)
     .then((response) => {
       response.data.password = "******"
       this.item = response.data
@@ -116,9 +116,8 @@ export default {
 
       this.item.bloqueado = this.item.bloqueado.toLowerCase() == 'true';
 
-      axios.put(`/admin/updateuser`, this.item)
+      axios.put(`/admin/user`, this.item)
       .then((response) =>{
-        console.log(response);
         this.item = response.data
         this.$router.push('/users');
       })
