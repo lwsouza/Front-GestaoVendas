@@ -61,6 +61,11 @@ const FormUserUpd = () => import('@/views/users/FormUserUpd')
 const FormUserAdd = () => import('@/views/users/FormUserAdd')
 // const ListUsers = () => import('@/views/users/ListUsers')
 
+// Users
+const Categories = () => import('@/views/category/Categories')
+const FormCategoryAdd = () => import('@/views/category/FormCategoryAdd')
+const FormCategoryEdit = () => import('@/views/category/FormCategoryEdit')
+
 Vue.use(Router)
 
 export default new Router({
@@ -89,21 +94,33 @@ export default new Router({
           name: 'Dashboard',
           component: Dashboard
         },
-        // {
-        //   path: 'users',
-        //   redirect: '/users/listusers',
-        //   name: 'Usuários',
-        //   component: {
-        //     render (c) { return c('router-view') }
-        //   },
-        //   children: [
-        //     {
-        //       path: 'listusers',
-        //       name: 'Lista de Usuários',
-        //       component: ListUsers
-        //     }
-        //   ]
-        // },
+        {
+          path: 'category',
+          redirect: '/category/categories',
+          name: 'Categoria',
+          component: {
+            render (c) { return c('router-view') }
+          },
+          children: [
+            {
+              path: 'categories',
+              name: 'Lista de Categorias',
+              component: Categories
+            },
+            {
+              path: 'add',
+              meta: { label: 'Adicionar Categoria'},
+              name: 'CategoryAdd',
+              component: FormCategoryAdd,
+            },
+            {
+              path: 'edit/:id',
+              meta: { label: 'Editar Categoria'},
+              name: 'CategoryEdit',
+              component: FormCategoryEdit
+            }
+          ]
+        },
         {
           path: 'theme',
           redirect: '/theme/colors',
@@ -136,7 +153,7 @@ export default new Router({
         },
         {
           path: 'users',
-          meta: { label: 'Users'},
+          meta: { label: 'Usuário'},
           component: {
             render (c) { return c('router-view') }
           },
@@ -153,13 +170,13 @@ export default new Router({
             // },
             {
               path: 'edit/:id',
-              meta: { label: 'User Edit'},
+              meta: { label: 'Editar usuário'},
               name: 'User',
               component: FormUserUpd,
             },
             {
               path: 'add',
-              meta: { label: 'User Add'},
+              meta: { label: 'Adicionar usuário'},
               name: 'UserAdd',
               component: FormUserAdd,
             }

@@ -9,20 +9,20 @@ export default {
         text: 'NEW'
       }
     },
-    // {
-    //   title: true,
-    //   name: 'Admin',
-    //   class: '',
-    //   wrapper: {
-    //     element: '',
-    //     attributes: {}
-    //   }
-    // },
-    // {
-    //   name: 'Usuários',
-    //   url: '/users/listusers',
-    //   icon: 'icon-drop'
-    // },
+    {
+      title: true,
+      name: 'Controle',
+      class: '',
+      wrapper: {
+        element: '',
+        attributes: {}
+      }
+    },
+    {
+      name: 'Categoria',
+      url: '/category/categories',
+      icon: 'icon-drop'
+    },
     {
       title: true,
       name: 'Theme',
